@@ -176,7 +176,7 @@ function normalizeSetup(setup) {
   const deck = setup.deck;
   if (!deck || typeof deck !== 'object' || Array.isArray(deck)) throw new Error('Setup needs a deck object {name: count}.');
   for (const [n, c] of Object.entries(deck)) {
-    if (!isNonNegInt(c)) throw new Error(`Deck count for ${n} must be a whole number ≥ 0 (got ${JSON.stringify(c)}).`);
+    if (!isNonNegInt(c)) throw new Error(`Deck count for ${n} must be a whole number ≥ 0 (got ${show(c)}).`);
   }
   const arr = (v, what) => {
     if (v === undefined || v === null) return [];
@@ -218,6 +218,12 @@ function normalizeSetup(setup) {
   };
 }
 
+/** Deck count by name: own properties only ("constructor" is not a card). */
+const deckCount = (deck, name) => (Object.prototype.hasOwnProperty.call(deck, name) ? deck[name] : 0);
+
+/** JSON.stringify shows NaN/Infinity as null; show numbers as themselves. */
+const show = (v) => (typeof v === 'number' ? String(v) : JSON.stringify(v));
+
 function poolOf(n) {
   // Library before Doomsday, then + graveyard.
   const left = new Map(Object.entries(n.deck).filter(([, c]) => c > 0));
@@ -230,7 +236,7 @@ function poolOf(n) {
   for (const [name, c] of left) {
     if (c < 0) {
       const extra = name === 'Doomsday' ? ' (counting the Doomsday on the stack)' : '';
-      throw new Error(`${name}: hand + battlefield + graveyard + exile${extra} use ${(n.deck[name] || 0) - c} copies but the deck has ${n.deck[name] || 0}.`);
+      throw new Error(`${name}: hand + battlefield + graveyard + exile${extra} use ${deckCount(n.deck, name) - c} copies but the deck has ${deckCount(n.deck, name)}.`);
     }
   }
   for (const x of n.graveyard) left.set(x, left.get(x) + 1);
@@ -238,12 +244,12 @@ function poolOf(n) {
 }
 
 function validate(n) {
-  if (!((n.deck.Doomsday || 0) >= 1)) throw new Error('The deck has no Doomsday to account for the one being cast.');
+  if (!(deckCount(n.deck, 'Doomsday') >= 1)) throw new Error('The deck has no Doomsday to account for the one being cast.');
   if (!(Number.isInteger(n.lifeBeforeDoomsday) && n.lifeBeforeDoomsday >= 1)) {
-    throw new Error(`lifeBeforeDoomsday must be a whole number ≥ 1 (got ${JSON.stringify(n.lifeBeforeDoomsday)}).`);
+    throw new Error(`lifeBeforeDoomsday must be a whole number ≥ 1 (got ${show(n.lifeBeforeDoomsday)}).`);
   }
   if (!(Number.isInteger(n.turnsAhead) && n.turnsAhead >= 0 && n.turnsAhead <= 3)) {
-    throw new Error(`turnsAhead must be a whole number from 0 to 3 (got ${JSON.stringify(n.turnsAhead)}).`);
+    throw new Error(`turnsAhead must be a whole number from 0 to 3 (got ${show(n.turnsAhead)}).`);
   }
   if (!isNonNegInt(n.noncreatureSpellsCastThisTurn)) {
     throw new Error('noncreatureSpellsCastThisTurn must be a whole number ≥ 0.');
@@ -701,7 +707,10 @@ function doCast(s, a) {
   spend(s, a.payment);
   const creature = has(d, 'creature');
   if (!creature) s.noncreatureCast += 1;
-  if (s.opponent.permanents.some((p) => p.name === CHALICE && p.x === d.mv)) {
+  // Cavern of Souls: a spell paid with Cavern's colored mana "can't be countered",
+  // so Chalice's trigger does nothing to it (reported as a spec gap in REVIEW.md, fixed here).
+  const uncounterable = Object.entries(a.payment || {}).some(([k, v]) => k.startsWith('r') && v > 0);
+  if (!uncounterable && s.opponent.permanents.some((p) => p.name === CHALICE && p.x === d.mv)) {
     s.graveyard.push(a.card);
     return [{ state: s, label: `${a.card} is countered by Chalice of the Void` }];
   }

@@ -253,7 +253,61 @@ function showResultError(messages) {
   $('#result').innerHTML = `<ul class="errors">${messages.map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>`;
 }
 
+// A search can take many seconds (or run to the node limit), which froze the
+// page when it ran on the main thread. It runs in a module worker instead; the
+// Check button turns into Cancel meanwhile. null worker = not supported.
+let worker;
+let job = 0;
+
+function stopWorker() {
+  if (worker) worker.terminate();
+  worker = undefined;
+}
+
+function finishCheck() {
+  const btn = $('#check');
+  btn.textContent = 'Check pile';
+  btn.disabled = !(engine && solver);
+}
+
+/** Start a worker search; false if workers are unavailable (caller solves inline). */
+function solveInWorker(setup, pile) {
+  if (worker === null || typeof Worker === 'undefined') return false;
+  stopWorker();
+  try {
+    worker = new Worker(new URL('./solveWorker.js', import.meta.url), { type: 'module' });
+  } catch {
+    worker = null;
+    return false;
+  }
+  const id = ++job;
+  worker.onmessage = (e) => {
+    if (e.data.id !== id) return;
+    stopWorker();
+    finishCheck();
+    if (!e.data.ok) { showResultError([`Solver error: ${e.data.error}`]); return; }
+    $('#result').innerHTML = renderResultHTML(e.data.res, e.data.lines) + `<p class="meta">Solved in ${e.data.ms} ms.</p>`;
+  };
+  worker.onerror = (e) => {
+    // Module workers unsupported or the worker failed to load: solve inline.
+    e.preventDefault?.();
+    stopWorker();
+    worker = null;
+    finishCheck();
+    onCheck();
+  };
+  worker.postMessage({ id, setup, pile, maxNodes: MAX_NODES });
+  return true;
+}
+
 function onCheck() {
+  if (worker) { // the button reads "Cancel" while a search runs
+    stopWorker();
+    job += 1;
+    finishCheck();
+    $('#result').innerHTML = '<p class="meta">Cancelled.</p>';
+    return;
+  }
   if (!engine || !solver) {
     showResultError(['The engine or solver failed to load, so piles cannot be checked. See the message at the top.']);
     return;
@@ -276,9 +330,14 @@ function onCheck() {
     return;
   }
   const btn = $('#check');
+  $('#result').innerHTML = '<div class="banner busy" role="status">Solving…</div>';
+  if (solveInWorker(current.setup, [...model.pile])) {
+    btn.textContent = 'Cancel';
+    return;
+  }
+  // No module-worker support: fall back to the synchronous search.
   btn.disabled = true;
   btn.textContent = 'Solving…';
-  $('#result').innerHTML = '<div class="banner busy" role="status">Solving…</div>';
   // Let the "Solving…" state paint before the synchronous search.
   setTimeout(() => {
     try {

@@ -157,7 +157,7 @@ Devotion to blue = number of {U} symbols in the mana costs of my permanents
 | Deafening Silence | I can't cast more than one noncreature spell per turn. Uses `noncreatureCast` (which counts Doomsday on turn 0 via setup). A countered spell still counts. |
 | Thalia, Guardian of Thraben | My noncreature spells cost {1} more. Creature (MV 2). |
 | Gaddock Teeg | My noncreature spells with MV ≥ 4 or {X} in their cost can't be cast. Creature (MV 2). |
-| Chalice of the Void (`x`) | When I cast a spell with MV == x, it is countered: the card goes to my graveyard (permanent spells too), the mana is spent, nothing else happens, and it still counts as cast for Deafening Silence. Lands aren't cast, so they're unaffected. |
+| Chalice of the Void (`x`) | When I cast a spell with MV == x, it is countered (unless any Cavern of Souls colored mana paid for it — Cavern makes it uncounterable): the card goes to my graveyard (permanent spells too), the mana is spent, nothing else happens, and it still counts as cast for Deafening Silence. Lands aren't cast, so they're unaffected. |
 | Disruptor Flute (`named`) | Spells with that name cost {3} more. Non-mana activated abilities of sources with that name can't be activated. **Cycling counts** (it is an activated ability of the card in hand) and **fetchland activation counts**. Mana abilities (lands, Petal, LED) are unaffected. |
 
 Cost increases add generic mana and stack (Thalia + Flute = +4). Mana value never changes.

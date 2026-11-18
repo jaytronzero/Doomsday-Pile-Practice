@@ -34,7 +34,10 @@ export function parseDeck(text) {
       errors.push({ line: i + 1, text: raw, message: `Line ${i + 1}: count must be at least 1` });
       return;
     }
-    target[name] = (target[name] ?? 0) + count;
+    // Own properties only: "constructor" or "__proto__" lines must not read
+    // (or write) Object.prototype.
+    const prev = Object.prototype.hasOwnProperty.call(target, name) ? target[name] : 0;
+    Object.defineProperty(target, name, { value: prev + count, enumerable: true, writable: true, configurable: true });
   });
   return { main, side, errors };
 }

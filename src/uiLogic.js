@@ -59,6 +59,8 @@ export function removeName(list, name) {
   return [...list.slice(0, i), ...list.slice(i + 1)];
 }
 
+const normName = (s) => String(s ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+
 function toInt(value) {
   if (typeof value === 'number') return value;
   const s = String(value ?? '').trim();
@@ -121,6 +123,13 @@ export function buildSetup(model) {
   if (!Number.isInteger(turns) || turns < 0 || turns > 3) errors.push('Turns ahead must be 0–3.');
 
   const permanents = opponentPermanents(model.opponent);
+  // The engine matches Flute's name exactly (§6), so a typed "street wraith"
+  // would silently do nothing. Card names are unique ignoring case and spacing:
+  // map the typed name onto the deck's spelling when one matches.
+  const canon = new Map(Object.keys(parsed.main).map((n) => [normName(n), n]));
+  for (const p of permanents) {
+    if (p.name === 'Disruptor Flute' && canon.has(normName(p.named))) p.named = canon.get(normName(p.named));
+  }
   for (const p of permanents) {
     if (p.name === 'Chalice of the Void' && !(Number.isInteger(p.x) && p.x >= 0)) {
       errors.push('Chalice of the Void needs X as a whole number ≥ 0.');
@@ -176,8 +185,16 @@ export function modelFromSetup(setup, pile = []) {
   if (setup.cavernType) m.cavernType = setup.cavernType;
   if (setup.turnsAhead !== undefined) m.turnsAhead = setup.turnsAhead;
   m.opponent = opp;
-  m.pile = Array.isArray(pile) ? [...pile] : [];
-  return { model: m, warnings: unknown.map((n) => `Unknown opponent permanent ignored: ${n}`) };
+  // A pile is never longer than 5 (§3). An imported setup that is invalid keeps
+  // its pile unnormalised until fixed, so clamp here or the page renders one
+  // select per entry of an arbitrarily long array.
+  m.pile = Array.isArray(pile) ? pile.slice(0, 5) : [];
+  // deckToText keeps only whole-number counts ≥ 1; say what was dropped instead
+  // of silently checking a different deck than the one pasted.
+  const dropped = Object.entries(setup.deck ?? {})
+    .filter(([, n]) => !(Number.isInteger(n) && n >= 0))
+    .map(([name, n]) => `Deck entry ignored (count must be a whole number): ${name} = ${JSON.stringify(n)}`);
+  return { model: m, warnings: [...unknown.map((n) => `Unknown opponent permanent ignored: ${n}`), ...dropped] };
 }
 
 // ---------- pile pool bookkeeping ----------
