@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doomsday Pile Practice</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/ui.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Doomsday Pile Practice</h1>
+    <p class="sub">Pick a pile. See whether a line wins against every shuffle.</p>
+  </header>
+
+  <div id="load-error" class="load-error" role="alert" hidden></div>
+  <noscript><p class="load-error">This page needs JavaScript (ES modules).</p></noscript>
+
+  <main>
+    <section id="sec-deck">
+      <h2>1. Deck</h2>
+      <label for="deck-text">Main deck after sideboarding. A “Sideboard” line ends the main deck.</label>
+      <textarea id="deck-text" rows="10" spellcheck="false" autocomplete="off"></textarea>
+      <div class="row">
+        <span id="deck-summary" class="meta"></span>
+        <button type="button" id="deck-reset" class="secondary">Reset to default list</button>
+      </div>
+      <ul id="deck-errors" class="errors"></ul>
+    </section>
+
+    <section id="sec-board">
+      <h2>2. Board at Doomsday</h2>
+
+      <h3>Hand <span class="meta">(after Doomsday resolved)</span></h3>
+      <div class="zone" data-zone="hand"></div>
+
+      <h3>My battlefield</h3>
+      <div class="zone" data-zone="battlefield"></div>
+
+      <details>
+        <summary>Graveyard and exile <span class="meta">(before Doomsday)</span></summary>
+        <h3>Graveyard</h3>
+        <div class="zone" data-zone="graveyard"></div>
+        <h3>Exile</h3>
+        <div class="zone" data-zone="exile"></div>
+      </details>
+
+      <h3>Floating mana</h3>
+      <div class="mana" id="mana"></div>
+
+      <div class="grid2">
+        <label>Life before Doomsday
+          <input type="number" id="life" inputmode="numeric" min="1" step="1">
+        </label>
+        <label>Noncreature spells cast this turn <span class="meta">(incl. Doomsday)</span>
+          <input type="number" id="noncreature" inputmode="numeric" min="1" step="1">
+        </label>
+        <label>Cavern of Souls type
+          <input type="text" id="cavern" autocomplete="off">
+        </label>
+        <label class="check"><input type="checkbox" id="land-played"> Land played this turn</label>
+      </div>
+    </section>
+
+    <section id="sec-opp">
+      <h2>3. Opponent board</h2>
+      <div class="opp">
+        <label class="check"><input type="checkbox" data-opp="Deafening Silence"> Deafening Silence</label>
+        <label class="check"><input type="checkbox" data-opp="Thalia, Guardian of Thraben"> Thalia, Guardian of Thraben</label>
+        <label class="check"><input type="checkbox" data-opp="Gaddock Teeg"> Gaddock Teeg</label>
+        <div class="opp-param">
+          <label class="check"><input type="checkbox" data-opp="Chalice of the Void"> Chalice of the Void</label>
+          <label class="inline">X = <input type="number" id="chalice-x" inputmode="numeric" min="0" step="1"></label>
+        </div>
+        <div class="opp-param">
+          <label class="check"><input type="checkbox" data-opp="Disruptor Flute"> Disruptor Flute</label>
+          <label class="inline">naming <input type="text" id="flute-name" list="card-names" autocomplete="off" placeholder="Card name"></label>
+        </div>
+      </div>
+      <datalist id="card-names"></datalist>
+    </section>
+
+    <section id="sec-turns">
+      <h2>4. Turns ahead</h2>
+      <div class="seg" id="turns" role="radiogroup" aria-label="Turns ahead">
+        <label><input type="radio" name="turns" value="0"><span>0<small>this turn</small></span></label>
+        <label><input type="radio" name="turns" value="1"><span>1</span></label>
+        <label><input type="radio" name="turns" value="2"><span>2</span></label>
+        <label><input type="radio" name="turns" value="3"><span>3</span></label>
+      </div>
+    </section>
+
+    <section id="sec-pile">
+      <h2>5. Pile <span class="meta">(top → bottom)</span></h2>
+      <p id="life-after" class="meta"></p>
+      <ul id="setup-errors" class="errors"></ul>
+      <ol id="pile" class="pile"></ol>
+      <details>
+        <summary>Pile pool <span id="pool-total" class="meta"></span></summary>
+        <ul id="pool" class="pool"></ul>
+      </details>
+      <button type="button" id="check" class="primary">Check pile</button>
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+
+    <section id="sec-json">
+      <h2>6. Scenario JSON</h2>
+      <p class="meta">Export the current setup and pile, or paste a scenario <code>{"setup": …, "pile": […]}</code> and import it.</p>
+      <textarea id="scenario" rows="8" spellcheck="false" autocomplete="off"></textarea>
+      <div class="row">
+        <button type="button" id="export" class="secondary">Export</button>
+        <button type="button" id="import" class="secondary">Import</button>
+      </div>
+      <p id="scenario-msg" class="meta"></p>
+    </section>
+  </main>
+</body>
+</html>
