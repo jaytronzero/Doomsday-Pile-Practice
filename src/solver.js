@@ -457,12 +457,14 @@ export function explain(plan) {
       if (a.type === 'pass') {
         c = c.phase === 'main' ? { turn: c.turn, phase: 'opp' } : { turn: c.turn + 1, phase: 'main' };
         lines.push(`${pad}${header(c)}`);
-        cur = cur.then;
-        continue;
+        // v2: a pass opens W-oppturn / W-myturn, so it can be a branch (the opponent's choices).
+        if (cur.kind !== 'branch') { cur = cur.then; continue; }
+      } else {
+        lines.push(`${pad}${a.desc}`);
       }
-      lines.push(`${pad}${a.desc}`);
       if (cur.kind === 'branch') {
-        lines.push(`${pad}  ⚠ random outcome; every case wins:`);
+        const opp = cur.outcomes.some((o) => /(^|\| )Opponent: /.test(o.label));
+        lines.push(`${pad}  ⚠ ${opp ? "the opponent's choice or a random outcome" : 'random outcome'}; every case wins:`);
         for (const o of cur.outcomes) {
           lines.push(`${pad}  • ${o.label}`);
           walk(o.plan, c, indent + 2);

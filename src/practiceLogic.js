@@ -241,8 +241,9 @@ export function statsSummary(stats, scenarios = []) {
 /** 0.4567 → "46%"; null → "?". Values strictly between 0 and 1 never round to 0% / 100%. */
 export function formatPct(x) {
   if (!finite(x)) return '?';
-  if (x <= 0) return '0%';
-  if (x >= 1) return '100%';
+  // Sums of probabilities carry float noise (Σ weights = 0.9999999999999999): within 1e-12 is exact.
+  if (x <= 1e-12) return '0%';
+  if (x >= 1 - 1e-12) return '100%';
   const r = Math.round(x * 100);
   if (r === 0) return '<1%';
   if (r === 100) return '>99%';
@@ -290,8 +291,10 @@ function manaText(pool) {
  * Board view model for a scenario.
  * @param {object} scenario
  * @param {(setup) => object} [availablePile]  engine.availablePile; the uiLogic fallback is used otherwise.
+ * @param {(setup, pile) => object} [buildStartState]  engine.buildStartState: its state.warnings (unmodelled
+ *   permanents, variable power) are shown with the scenario's own warnings, without duplicates.
  */
-export function boardView(scenario, availablePile = null) {
+export function boardView(scenario, availablePile = null, buildStartState = null) {
   const setup = scenario.setup ?? {};
   const src = scenario.source ?? {};
   const opp = setup.opponent ?? {};
@@ -349,11 +352,22 @@ export function boardView(scenario, availablePile = null) {
       lands: `${lands.untapped ?? 0}/${lands.total ?? 0} untapped${lands.colors ? ` (${lands.colors})` : ''}`,
       source: opp.deckEstimateSource ?? null,
     },
-    warnings: [...(scenario.warnings ?? [])],
+    warnings: mergeWarnings(scenario, buildStartState),
     pool: clean,
     poolList: poolSummary(clean, []),
     poolError,
   };
+}
+
+function mergeWarnings(scenario, buildStartState) {
+  const out = [...(Array.isArray(scenario.warnings) ? scenario.warnings : [])];
+  if (typeof buildStartState !== 'function') return out;
+  try {
+    for (const w of buildStartState(scenario.setup, [...(scenario.actual?.pile ?? [])]).warnings ?? []) {
+      if (!out.includes(w)) out.push(w);
+    }
+  } catch { /* an invalid board is reported elsewhere (pool error / submit) */ }
+  return out;
 }
 
 // ---------- best order of the actual pile ----------
@@ -447,15 +461,20 @@ export function gradeView(g) {
     pHold: finite(s.pHold) ? s.pHold : null,
     wins: s.wins,
     text: `${s.wins === true ? 'beats' : s.wins === false ? 'loses to' : 'unknown vs'} ${s.card}`
-      + (finite(s.pHold) ? ` (est. ${formatPct(s.pHold)} they hold one${Number.isInteger(s.k) ? `; ${s.k} unseen` : ''})` : ''),
+      + (finite(s.pHold) ? ` (est. ${formatPct(s.pHold)} they hold one${Number.isInteger(s.k) ? `; ${s.k} unseen` : ''})` : '')
+      + (s.wins !== true && s.wins !== false ? ` (too big to solve${typeof s.reason === 'string' ? `: ${s.reason}` : ''})` : ''),
   }));
   // Losers first (most likely first), then unknowns, then the cards it beats.
   const rank = (s) => (s.wins === false ? 0 : s.wins === null || s.wins === undefined ? 1 : 2);
   singles.sort((a, b) => rank(a) - rank(b) || (b.pHold ?? 0) - (a.pHold ?? 0) || a.card.localeCompare(b.card));
-  const pairs = (g.pairs ?? []).map((p) => ({ cards: p.cards, wins: p.wins, text: (p.cards ?? []).join(' + ') }));
+  const pairs = (g.pairs ?? []).map((p) => ({
+    cards: p.cards, wins: p.wins,
+    text: (p.cards ?? []).join(' + ') + (p.wins !== true && p.wins !== false && typeof p.reason === 'string' ? ` (too big to solve: ${p.reason})` : ''),
+  }));
   return {
     goldfish: gf,
     goldfishLabel: GOLDFISH_LABEL[gf] ?? 'ERROR',
+    reason: gf === 'aborted' ? (typeof g.goldfish?.reason === 'string' ? g.goldfish.reason : 'the search ran out of its node budget') : null,
     goldfishWin: gf === 'win',
     est: formatEst(g),
     pWin: scoreOf(g),

@@ -105,7 +105,44 @@ export function handWinProbability(counts, N, h, verdict) {
   return { low, high };
 }
 
+/**
+ * Same value as handWinProbability({r: k_r}, N, h, v => handVerdict(v, singles, pairs)), computed on fewer
+ * dimensions: the plain enumeration is exponential in |R| (18 names × 3 copies, h = 7: ~3 s; 30 names: minutes).
+ * Exact regrouping, by handVerdict's own rules:
+ *  - every card whose single is false makes the hand false: they are one bucket F (n_F ≥ 1 ⇒ false);
+ *  - every card whose single is unknown makes it at least unknown (pairs with it are never solved): bucket U;
+ *  - a card whose single wins and whose every solved pair (itself included) wins never changes the verdict:
+ *    it joins the "other" cards;
+ *  - the remaining winning cards (in some losing / unknown pair) keep their own dimension.
+ * Pairs are only solved between winning singles, so no other pair can be present.
+ */
+function bucketedProbability(R, unseen, N, h, singles, pairs) {
+  const F = R.filter((r) => singles[r] === false);
+  const U = R.filter((r) => singles[r] !== true && singles[r] !== false);
+  const T = R.filter((r) => singles[r] === true);
+  const pairOf = (a, b) => (own(pairs, pairKey(a, b)) ? pairs[pairKey(a, b)] : null);
+  const touchy = T.filter((r) => T.some((t) => (t !== r || unseen[r] >= 2) && pairOf(r, t) !== true));
+  const FKEY = '\u0000F';
+  const UKEY = '\u0000U';
+  const counts = {};
+  const sum = (xs) => xs.reduce((t, r) => t + unseen[r], 0);
+  if (F.length) counts[FKEY] = sum(F);
+  if (U.length) counts[UKEY] = sum(U);
+  for (const r of touchy) counts[r] = unseen[r];
+  return handWinProbability(counts, N, h, (v) => {
+    if ((v[FKEY] ?? 0) >= 1) return false;
+    const tv = {};
+    for (const r of touchy) tv[r] = v[r];
+    const t = handVerdict(tv, Object.fromEntries(touchy.map((r) => [r, true])), pairs);
+    if (t === false) return false;
+    return (v[UKEY] ?? 0) >= 1 ? null : t;
+  });
+}
+
 const winsOf = (r) => (r.result === 'win' ? true : r.result === 'no_win' ? false : null);
+/** An aborted sub-solve keeps its reason (search budget, or OutcomeLimitError's message) for the reveal. */
+const withReason = (entry, r) => (entry.wins === null
+  ? { ...entry, reason: r.reason ?? 'the search ran out of its node budget' } : entry);
 
 /** Goldfish + interaction grade of `pile` on `setup` (API §11.2). */
 export function grade(setup, pile, { maxNodes = 200000, solver = solve } = {}) {
@@ -134,7 +171,11 @@ export function grade(setup, pile, { maxNodes = 200000, solver = solve } = {}) {
   const notModelled = names.filter((n) => !MODELLED.has(n)).sort();
   const offColor = names.filter((n) => MODELLED.has(n) && !castableInPrinciple(n, colors)).sort();
 
-  const run = (hand) => solver(buildStartState({ ...setup, opponent: { ...opp, hand } }, pile), { maxNodes });
+  // A sub-solve holds `hand`; its handSize is at least that many cards (a board with handSize 0 or 1 still
+  // gets its singles / pairs solved: their pHold is 0, so they never change P(win)).
+  const run = (hand) => solver(buildStartState({
+    ...setup, opponent: { ...opp, hand, handSize: Math.max(opp.handSize, hand.length) },
+  }, pile), { maxNodes });
   const goldfish = run([]);
   const base = {
     goldfish, singles: [], pairs: [], notModelled, offColor, unseen, N, h,
@@ -144,7 +185,10 @@ export function grade(setup, pile, { maxNodes = 200000, solver = solve } = {}) {
     if (goldfish.result === 'no_win') return { ...base, pWin: 0, pWinRange: [0, 0] };
     return { ...base, pWin: null, pWinRange: [0, 1] };
   }
-  const singles = R.map((r) => ({ card: r, k: unseen[r], pHold: pHold(N, unseen[r], h), wins: winsOf(run([r])) }));
+  const singles = R.map((r) => {
+    const res = run([r]);
+    return withReason({ card: r, k: unseen[r], pHold: pHold(N, unseen[r], h), wins: winsOf(res) }, res);
+  });
   const singlesMap = Object.fromEntries(singles.map((x) => [x.card, x.wins]));
   const pairs = [];
   if (h >= 2) {
@@ -154,12 +198,12 @@ export function grade(setup, pile, { maxNodes = 200000, solver = solve } = {}) {
         const s = R[j];
         if (r === s && unseen[r] < 2) continue;
         if (singlesMap[r] !== true || singlesMap[s] !== true) continue;
-        pairs.push({ cards: [r, s], wins: winsOf(run([r, s])) });
+        const res = run([r, s]);
+        pairs.push(withReason({ cards: [r, s], wins: winsOf(res) }, res));
       }
     }
   }
   const pairsMap = Object.fromEntries(pairs.map((p) => [pairKey(p.cards[0], p.cards[1]), p.wins]));
-  const counts = Object.fromEntries(R.map((r) => [r, unseen[r]]));
-  const { low, high } = handWinProbability(counts, N, h, (v) => handVerdict(v, singlesMap, pairsMap));
+  const { low, high } = bucketedProbability(R, unseen, N, h, singlesMap, pairsMap);
   return { ...base, singles, pairs, pWin: low === high ? low : null, pWinRange: [low, high] };
 }

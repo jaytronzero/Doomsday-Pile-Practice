@@ -171,7 +171,7 @@ function onDeal() {
   const { scenario, allMastered } = dealScenario(list, stats, { rng, repeatAll: $('#p-repeat').checked, lastId });
   if (!scenario) return;
   lastId = scenario.id;
-  const view = boardView(scenario, engine ? engine.availablePile : null);
+  const view = boardView(scenario, engine ? engine.availablePile : null, engine ? engine.buildStartState : null);
   current = { scenario, view, pile: normalizePile(view.pool, []) };
   renderBoard(view, allMastered);
   renderPile();
@@ -400,7 +400,7 @@ function planHTML(lines, summary) {
 
 function breakdownHTML(g) {
   if (!g.goldfishWin) {
-    return `<p class="meta">${g.goldfish === 'aborted' ? 'The goldfish search ran out of budget, so the hand was not graded (est. range 0–100%).'
+    return `<p class="meta">${g.goldfish === 'aborted' ? `TOO BIG: ${escapeHtml(g.reason ?? 'the search ran out of its node budget')}. The hand was not graded (est. range 0–100%).`
       : 'It does not win even if they do nothing, so their hand was not graded (est. 0%).'}</p>`;
   }
   if (g.goldfishOnly) return '';

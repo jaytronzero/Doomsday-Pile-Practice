@@ -296,7 +296,9 @@ export function renderResultHTML(res, lines = []) {
   if (res?.result === 'no_win') {
     html += `<p class="meta">No line wins against every shuffle within the turn limit. (${nodes} positions searched.)</p>`;
   } else if (res?.result === 'aborted') {
-    html += `<p class="meta">Search stopped after ${nodes} positions without an answer. Try fewer turns ahead.</p>`;
+    html += typeof res.reason === 'string'
+      ? `<p class="meta">${escapeHtml(res.reason)} No answer: try fewer turns ahead or a smaller board.</p>`
+      : `<p class="meta">Search stopped after ${nodes} positions without an answer. Try fewer turns ahead.</p>`;
   } else if (res?.result === 'win') {
     html += `<p class="meta">${nodes} positions searched.</p>`;
   }

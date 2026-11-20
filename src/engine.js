@@ -729,8 +729,9 @@ function cycleActions(s, name) {
 /** Colors a land of mine taps for now (Blood Moon / Magus: nonbasics tap for R only). */
 function landColors(s, name) {
   const d = cardDef(name);
+  // Under the Moon every nonbasic land of mine is a Mountain ({T}: Add {R}), fetchlands included.
+  if (isNonbasicLand(name) && moon(s) && d.supported) return ['R'];
   if (!d.produces) return null;
-  if (isNonbasicLand(name) && moon(s)) return ['R'];
   return d.produces;
 }
 
@@ -985,6 +986,8 @@ function doPass(P) {
   if (s.phase === 'main') {
     s.phase = 'opp';
     newTurnCounters(s);
+    // Their untap step: a permanent of theirs that was tapped (only Trinisphere reads it) untaps.
+    for (const p of s.opponent.permanents) if (p.tapped === true) p.tapped = false;
     P.lab.push("Opponent's turn");
     // Pact of Negation upkeeps (API §8.5).
     const due = s.opp.pacts.filter((t) => t === s.turn);
@@ -1469,19 +1472,26 @@ function advOptions(s, win) {
   const pendingO = oraclePending(s);
   const torpor = oppHas(s, TORPOR);
   const add = (card, mode, target, extra = {}) => {
+    // Their own Chalice of the Void counters their noncreature spell of that mana value ("Whenever a
+    // player casts …"), so casting it does nothing: not an option. (Creature spells are left in: a
+    // Cavern of Souls of theirs, not modelled, could make them uncounterable; keeping them is pessimistic.)
+    if (!has({ types: OPP_CARDS[card].types }, 'creature') && chaliceOn(s, OPP_CARDS[card].mv + (extra.x ?? 0))) return;
     const pays = extra.pays ?? oppPayments(s, card, extra.x ?? 0);
     for (const pay of pays) out.push({ card, mode, target, pay, ...extra });
   };
 
-  // Visible abilities (API §8.4).
+  // Visible abilities (API §8.4). Pithing Needle / Disruptor Flute naming them stop every source with that
+  // name; Collector Ouphe stops every artifact's abilities (Karn only mine); under Blood Moon / Magus their
+  // Wasteland and Ghost Quarter are Mountains with no other ability (verified texts).
   const seenPerm = new Set();
   for (const p of s.opponent.permanents) {
     if (seenPerm.has(p.name)) continue;
-    if (p.name === CRYPT && s.graveyard.length) {
+    if (abilityLocked(s, p.name)) continue;
+    if (p.name === CRYPT && s.graveyard.length && !oppHas(s, OUPHE)) {
       seenPerm.add(p.name);
       out.push({ card: CRYPT, mode: 'exile_graveyard', visible: true });
     }
-    if ((p.name === WASTELAND || p.name === GQ) && (win === 'oppturn' || win === 'myturn')) {
+    if ((p.name === WASTELAND || p.name === GQ) && (win === 'oppturn' || win === 'myturn') && !moon(s)) {
       seenPerm.add(p.name);
       for (const g of bfGroups(s, (q) => isLandName(q.name) && (p.name === GQ || !isBasic(q.name)))) {
         out.push({ card: p.name, mode: 'destroy', target: g.name, land: g, visible: true });
@@ -1728,6 +1738,7 @@ function applyAdv(P, o, win) {
 }
 
 const torporOn = (s) => oppHas(s, TORPOR);
+const chaliceOn = (s, mv) => s.opponent.permanents.some((p) => p.name === CHALICE && p.x === mv);
 
 /** Brutality's escalate cost: discard a card (an unknown one, or the held card `esc`). */
 function escalate(s, esc) {
