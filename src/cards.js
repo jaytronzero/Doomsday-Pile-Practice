@@ -90,7 +90,7 @@ const LIST = [
   }),
   def('Street Wraith', {
     types: ['creature'], subtypes: ['Wraith'], cost: { B: 2, generic: 3 }, cycling: { kind: 'life', n: 2 },
-    oracle: "Swampwalk\nCycling—Pay 2 life. (Pay 2 life, Discard this card: Draw a card.)",
+    oracle: "Swampwalk (This creature can't be blocked as long as defending player controls a Swamp.)\nCycling—Pay 2 life. (Pay 2 life, Discard this card: Draw a card.)",
   }),
   def('Edge of Autumn', {
     types: ['sorcery'], cost: { G: 1, generic: 1 }, cycling: { kind: 'sacLand' }, verified: true,
@@ -111,7 +111,7 @@ const LIST = [
   }),
   def('Consider', {
     types: ['instant'], cost: { U: 1 },
-    oracle: 'Surveil 1. (Look at the top card of your library. You may put that card into your graveyard.)\nDraw a card.',
+    oracle: 'Surveil 1. (Look at the top card of your library. You may put it into your graveyard.)\nDraw a card.',
   }),
   def('Personal Tutor', {
     types: ['sorcery'], cost: { U: 1 }, verified: true,
@@ -136,7 +136,7 @@ const LIST = [
   }),
   def('Fatal Push', {
     types: ['instant'], cost: { B: 1 },
-    oracle: 'Destroy target creature if it has mana value 2 or less.\nRevolt — Destroy that creature if it has mana value 4 or less instead if a permanent left the battlefield under your control this turn.',
+    oracle: 'Destroy target creature if it has mana value 2 or less.\nRevolt — Destroy that creature if it has mana value 4 or less instead if a permanent you controlled left the battlefield this turn.',
   }),
 
   // ---- Dead in v1 (types kept so type checks still see them) -----------------
@@ -159,7 +159,7 @@ const LIST = [
   }),
   def('Flusterstorm', {
     types: ['instant'], cost: { U: 1 }, supported: false,
-    oracle: 'Counter target instant or sorcery spell unless its controller pays {1}.\nStorm',
+    oracle: 'Counter target instant or sorcery spell unless its controller pays {1}.\nStorm (When you cast this spell, copy it for each spell cast before it this turn. You may choose new targets for the copies.)',
   }),
   def('Barrowgoyf', {
     types: ['creature'], subtypes: ['Lhurgoyf'], cost: { B: 1, generic: 2 }, supported: false,
@@ -175,8 +175,8 @@ const LIST = [
     oracle: "If Leyline of the Void is in your opening hand, you may begin the game with it on the battlefield.\nIf a card would be put into an opponent's graveyard from anywhere, exile it instead.",
   }),
   def('Voice of Victory', {
-    types: ['creature'], subtypes: ['Human', 'Monk'], cost: { W: 1, generic: 1 }, supported: false,
-    oracle: "Mobilize 2\nYour opponents can't cast spells during your turn.",
+    types: ['creature'], subtypes: ['Human', 'Bard'], cost: { W: 1, generic: 1 }, supported: false,
+    oracle: "Mobilize 2 (Whenever this creature attacks, create two tapped and attacking 1/1 red Warrior creature tokens. Sacrifice them at the beginning of the next end step.)\nYour opponents can't cast spells during your turn.",
   }),
 ];
 

@@ -1,0 +1,668 @@
+{
+ "version": 2,
+ "scenarios": [
+  {
+   "id": "SAMPLE-1-ub-tempo",
+   "source": {
+    "player": "SAMPLE",
+    "date": "2026-11-01",
+    "deck": "Turbo DD",
+    "oppDeck": "UB Tempo",
+    "gameNumber": 1,
+    "onPlay": false
+   },
+   "setup": {
+    "deck": {
+     "Bloodstained Mire": 1,
+     "Brainstorm": 4,
+     "Cavern of Souls": 1,
+     "Consider": 1,
+     "Dark Ritual": 4,
+     "Daze": 3,
+     "Doomsday": 4,
+     "Duress": 1,
+     "Edge of Autumn": 2,
+     "Flooded Strand": 1,
+     "Flow State": 4,
+     "Force of Will": 4,
+     "Island": 1,
+     "Lion's Eye Diamond": 1,
+     "Lotus Petal": 3,
+     "Misty Rainforest": 1,
+     "Personal Tutor": 3,
+     "Polluted Delta": 4,
+     "Ponder": 4,
+     "Scalding Tarn": 1,
+     "Street Wraith": 2,
+     "Swamp": 1,
+     "Thassa's Oracle": 2,
+     "Thoughtseize": 2,
+     "Undercity Sewers": 1,
+     "Underground Sea": 4
+    },
+    "cavernType": "Merfolk",
+    "cardsDrawnThisTurn": 1,
+    "hand": [
+     "Street Wraith",
+     "Ponder"
+    ],
+    "battlefield": [
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Underground Sea",
+      "tapped": false
+     }
+    ],
+    "graveyard": [
+     "Polluted Delta",
+     "Dark Ritual",
+     "Brainstorm"
+    ],
+    "exile": [],
+    "manaPool": {},
+    "lifeBeforeDoomsday": 19,
+    "landPlayedThisTurn": true,
+    "noncreatureSpellsCastThisTurn": 2,
+    "spellsCastThisTurn": 2,
+    "turnsAhead": 1,
+    "opponent": {
+     "permanents": [
+      {
+       "name": "Tamiyo, Inquisitive Student",
+       "power": 0
+      }
+     ],
+     "graveyard": [
+      "Brainstorm",
+      "Polluted Delta"
+     ],
+     "exile": [],
+     "life": 19,
+     "handSize": 4,
+     "lands": {
+      "untapped": 1,
+      "total": 2,
+      "colors": "UB"
+     },
+     "deckEstimate": {
+      "Force of Will": 4,
+      "Daze": 4,
+      "Brainstorm": 4,
+      "Ponder": 4,
+      "Orcish Bowmasters": 4,
+      "Tamiyo, Inquisitive Student": 4,
+      "Murktide Regent": 2,
+      "Thoughtseize": 3,
+      "Fatal Push": 2,
+      "Snuff Out": 1,
+      "Spell Pierce": 1,
+      "Psychic Frog": 2,
+      "Nethergoyf": 2,
+      "Consider": 2,
+      "Brazen Borrower": 2,
+      "Kaito, Bane of Nightmares": 1,
+      "Underground Sea": 4,
+      "Polluted Delta": 4,
+      "Flooded Strand": 2,
+      "Misty Rainforest": 2,
+      "Wasteland": 4,
+      "Island": 1,
+      "Swamp": 1
+     },
+     "deckEstimateSource": "SAMPLE estimate: hand-made typical UB Tempo list, not from logged games"
+    }
+   },
+   "actual": {
+    "pile": [
+     "Street Wraith",
+     "Thassa's Oracle",
+     "Underground Sea",
+     "Underground Sea",
+     "Island"
+    ],
+    "pileOrdered": false,
+    "result": "loss",
+    "winBy": "normal",
+    "turnsAfterDoomsday": 1
+   },
+   "warnings": [
+    "Opponent permanent 'Tamiyo, Inquisitive Student' not modelled: only its power (0) counts for the clock"
+   ]
+  },
+  {
+   "id": "SAMPLE-2-boros-energy",
+   "source": {
+    "player": "SAMPLE",
+    "date": "2026-11-02",
+    "deck": "Turbo DD",
+    "oppDeck": "Boros Energy",
+    "gameNumber": 2,
+    "onPlay": false
+   },
+   "setup": {
+    "deck": {
+     "Bloodstained Mire": 1,
+     "Brainstorm": 4,
+     "Cavern of Souls": 1,
+     "Consider": 1,
+     "Dark Ritual": 4,
+     "Daze": 3,
+     "Doomsday": 4,
+     "Duress": 1,
+     "Edge of Autumn": 2,
+     "Flooded Strand": 1,
+     "Flow State": 4,
+     "Force of Will": 4,
+     "Island": 1,
+     "Lion's Eye Diamond": 1,
+     "Lotus Petal": 3,
+     "Misty Rainforest": 1,
+     "Personal Tutor": 3,
+     "Polluted Delta": 4,
+     "Ponder": 4,
+     "Scalding Tarn": 1,
+     "Street Wraith": 2,
+     "Swamp": 1,
+     "Thassa's Oracle": 2,
+     "Thoughtseize": 2,
+     "Undercity Sewers": 1,
+     "Underground Sea": 4
+    },
+    "cavernType": "Merfolk",
+    "cardsDrawnThisTurn": 1,
+    "hand": [
+     "Thassa's Oracle",
+     "Brainstorm"
+    ],
+    "battlefield": [
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     }
+    ],
+    "graveyard": [
+     "Lotus Petal",
+     "Dark Ritual",
+     "Polluted Delta",
+     "Ponder"
+    ],
+    "exile": [],
+    "manaPool": {},
+    "lifeBeforeDoomsday": 18,
+    "landPlayedThisTurn": true,
+    "noncreatureSpellsCastThisTurn": 3,
+    "spellsCastThisTurn": 3,
+    "turnsAhead": 1,
+    "opponent": {
+     "permanents": [
+      {
+       "name": "Thalia, Guardian of Thraben",
+       "power": 2
+      },
+      {
+       "name": "Ocelot Pride",
+       "power": 1
+      }
+     ],
+     "graveyard": [
+      "Arid Mesa"
+     ],
+     "exile": [],
+     "life": 19,
+     "handSize": 4,
+     "lands": {
+      "untapped": 0,
+      "total": 2,
+      "colors": "RW"
+     },
+     "deckEstimate": {
+      "Thalia, Guardian of Thraben": 4,
+      "Ocelot Pride": 4,
+      "Guide of Souls": 4,
+      "Ajani, Nacatl Pariah": 4,
+      "Phelia, Exuberant Shepherd": 2,
+      "Voice of Victory": 2,
+      "Seasoned Pyromancer": 3,
+      "Ranger-Captain of Eos": 2,
+      "Solitude": 2,
+      "Swords to Plowshares": 4,
+      "Lightning Bolt": 4,
+      "Galvanic Discharge": 3,
+      "Goblin Bombardment": 1,
+      "Static Prison": 2,
+      "Arid Mesa": 4,
+      "Bloodstained Mire": 2,
+      "Plateau": 4,
+      "Sacred Foundry": 1,
+      "Mountain": 3,
+      "Plains": 3,
+      "Wasteland": 2
+     },
+     "deckEstimateSource": "SAMPLE estimate: hand-made typical Boros Energy list, not from logged games"
+    }
+   },
+   "actual": {
+    "pile": [
+     "Street Wraith",
+     "Street Wraith",
+     "Underground Sea",
+     "Underground Sea",
+     "Island"
+    ],
+    "pileOrdered": false,
+    "result": "win",
+    "winBy": "normal",
+    "turnsAfterDoomsday": 1
+   },
+   "warnings": [
+    "Opponent permanent 'Ocelot Pride' not modelled: only its power (1) counts for the clock"
+   ]
+  },
+  {
+   "id": "SAMPLE-3-eldrazi-chalice",
+   "source": {
+    "player": "SAMPLE",
+    "date": "2026-11-03",
+    "deck": "Turbo DD",
+    "oppDeck": "Eldrazi Stompy",
+    "gameNumber": 1,
+    "onPlay": false
+   },
+   "setup": {
+    "deck": {
+     "Bloodstained Mire": 1,
+     "Brainstorm": 4,
+     "Cavern of Souls": 1,
+     "Consider": 1,
+     "Dark Ritual": 4,
+     "Daze": 3,
+     "Doomsday": 4,
+     "Duress": 1,
+     "Edge of Autumn": 2,
+     "Flooded Strand": 1,
+     "Flow State": 4,
+     "Force of Will": 4,
+     "Island": 1,
+     "Lion's Eye Diamond": 1,
+     "Lotus Petal": 3,
+     "Misty Rainforest": 1,
+     "Personal Tutor": 3,
+     "Polluted Delta": 4,
+     "Ponder": 4,
+     "Scalding Tarn": 1,
+     "Street Wraith": 2,
+     "Swamp": 1,
+     "Thassa's Oracle": 2,
+     "Thoughtseize": 2,
+     "Undercity Sewers": 1,
+     "Underground Sea": 4
+    },
+    "cavernType": "Merfolk",
+    "cardsDrawnThisTurn": 1,
+    "hand": [
+     "Street Wraith",
+     "Lotus Petal"
+    ],
+    "battlefield": [
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Swamp",
+      "tapped": true
+     }
+    ],
+    "graveyard": [
+     "Polluted Delta",
+     "Brainstorm"
+    ],
+    "exile": [
+     "Ponder"
+    ],
+    "manaPool": {},
+    "lifeBeforeDoomsday": 17,
+    "landPlayedThisTurn": true,
+    "noncreatureSpellsCastThisTurn": 1,
+    "spellsCastThisTurn": 1,
+    "turnsAhead": 1,
+    "opponent": {
+     "permanents": [
+      {
+       "name": "Chalice of the Void",
+       "x": 1
+      },
+      {
+       "name": "Thought-Knot Seer",
+       "power": 4
+      }
+     ],
+     "graveyard": [],
+     "exile": [],
+     "life": 16,
+     "handSize": 4,
+     "lands": {
+      "untapped": 2,
+      "total": 3,
+      "colors": "CR"
+     },
+     "deckEstimate": {
+      "Chalice of the Void": 4,
+      "Thought-Knot Seer": 4,
+      "Reality Smasher": 4,
+      "It That Heralds the End": 4,
+      "Glaring Fleshraker": 4,
+      "Eldrazi Linebreaker": 4,
+      "Matter Reshaper": 3,
+      "Kozilek's Command": 4,
+      "Trinisphere": 3,
+      "Ancient Tomb": 4,
+      "City of Traitors": 2,
+      "Eldrazi Temple": 4,
+      "Wasteland": 4,
+      "Urza's Saga": 2,
+      "Sol Ring": 1,
+      "Mountain": 3,
+      "Ugin's Labyrinth": 3,
+      "Cavern of Souls": 3
+     },
+     "deckEstimateSource": "SAMPLE estimate: hand-made typical Eldrazi Stompy list, not from logged games"
+    }
+   },
+   "actual": {
+    "pile": [
+     "Thassa's Oracle",
+     "Street Wraith",
+     "Cavern of Souls",
+     "Underground Sea",
+     "Island"
+    ],
+    "pileOrdered": false,
+    "result": "win",
+    "winBy": "concession",
+    "turnsAfterDoomsday": 1
+   },
+   "warnings": [
+    "Opponent permanent 'Thought-Knot Seer' not modelled: only its power (4) counts for the clock"
+   ]
+  },
+  {
+   "id": "SAMPLE-4-sneak-show",
+   "source": {
+    "player": "SAMPLE",
+    "date": "2026-11-04",
+    "deck": "Turbo DD",
+    "oppDeck": "Sneak and Show",
+    "gameNumber": 3,
+    "onPlay": true
+   },
+   "setup": {
+    "deck": {
+     "Bloodstained Mire": 1,
+     "Brainstorm": 4,
+     "Cavern of Souls": 1,
+     "Consider": 1,
+     "Dark Ritual": 4,
+     "Daze": 3,
+     "Doomsday": 4,
+     "Duress": 1,
+     "Edge of Autumn": 2,
+     "Flooded Strand": 1,
+     "Flow State": 4,
+     "Force of Will": 4,
+     "Island": 1,
+     "Lion's Eye Diamond": 1,
+     "Lotus Petal": 3,
+     "Misty Rainforest": 1,
+     "Personal Tutor": 3,
+     "Polluted Delta": 4,
+     "Ponder": 4,
+     "Scalding Tarn": 1,
+     "Street Wraith": 2,
+     "Swamp": 1,
+     "Thassa's Oracle": 2,
+     "Thoughtseize": 2,
+     "Undercity Sewers": 1,
+     "Underground Sea": 4
+    },
+    "cavernType": "Merfolk",
+    "cardsDrawnThisTurn": 1,
+    "hand": [
+     "Thassa's Oracle",
+     "Brainstorm",
+     "Force of Will"
+    ],
+    "battlefield": [
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Underground Sea",
+      "tapped": false
+     },
+     {
+      "name": "Lotus Petal",
+      "tapped": false
+     }
+    ],
+    "graveyard": [
+     "Dark Ritual",
+     "Misty Rainforest"
+    ],
+    "exile": [],
+    "manaPool": {},
+    "lifeBeforeDoomsday": 19,
+    "landPlayedThisTurn": true,
+    "noncreatureSpellsCastThisTurn": 2,
+    "spellsCastThisTurn": 2,
+    "turnsAhead": 1,
+    "opponent": {
+     "permanents": [],
+     "graveyard": [],
+     "exile": [],
+     "life": 20,
+     "handSize": 7,
+     "lands": {
+      "untapped": 1,
+      "total": 1,
+      "colors": "UR"
+     },
+     "deckEstimate": {
+      "Show and Tell": 4,
+      "Sneak Attack": 4,
+      "Emrakul, the Aeons Torn": 2,
+      "Griselbrand": 2,
+      "Omniscience": 1,
+      "Atraxa, Grand Unifier": 1,
+      "Force of Will": 4,
+      "Daze": 2,
+      "Brainstorm": 4,
+      "Ponder": 4,
+      "Lotus Petal": 4,
+      "Spell Pierce": 3,
+      "Stifle": 2,
+      "Pyroblast": 1,
+      "Mindbreak Trap": 1,
+      "Volcanic Island": 4,
+      "Scalding Tarn": 4,
+      "Polluted Delta": 2,
+      "Misty Rainforest": 2,
+      "Island": 3,
+      "Mountain": 1,
+      "Ancient Tomb": 4,
+      "City of Traitors": 1
+     },
+     "deckEstimateSource": "SAMPLE estimate: hand-made typical Sneak and Show list, not from logged games"
+    }
+   },
+   "actual": {
+    "pile": [
+     "Street Wraith",
+     "Street Wraith",
+     "Force of Will",
+     "Underground Sea",
+     "Island"
+    ],
+    "pileOrdered": true,
+    "result": "win",
+    "winBy": "normal",
+    "turnsAfterDoomsday": 1
+   },
+   "warnings": []
+  },
+  {
+   "id": "SAMPLE-5-ur-delver",
+   "source": {
+    "player": "SAMPLE",
+    "date": "2026-11-05",
+    "deck": "Turbo DD",
+    "oppDeck": "UR Delver",
+    "gameNumber": 2,
+    "onPlay": false
+   },
+   "setup": {
+    "deck": {
+     "Bloodstained Mire": 1,
+     "Brainstorm": 4,
+     "Cavern of Souls": 1,
+     "Consider": 1,
+     "Dark Ritual": 4,
+     "Daze": 3,
+     "Doomsday": 4,
+     "Duress": 1,
+     "Edge of Autumn": 2,
+     "Flooded Strand": 1,
+     "Flow State": 4,
+     "Force of Will": 4,
+     "Island": 1,
+     "Lion's Eye Diamond": 1,
+     "Lotus Petal": 3,
+     "Misty Rainforest": 1,
+     "Personal Tutor": 3,
+     "Polluted Delta": 4,
+     "Ponder": 4,
+     "Scalding Tarn": 1,
+     "Street Wraith": 2,
+     "Swamp": 1,
+     "Thassa's Oracle": 2,
+     "Thoughtseize": 2,
+     "Undercity Sewers": 1,
+     "Underground Sea": 4
+    },
+    "cavernType": "Merfolk",
+    "cardsDrawnThisTurn": 1,
+    "hand": [
+     "Street Wraith"
+    ],
+    "battlefield": [
+     {
+      "name": "Underground Sea",
+      "tapped": true
+     },
+     {
+      "name": "Swamp",
+      "tapped": true
+     },
+     {
+      "name": "Island",
+      "tapped": true
+     }
+    ],
+    "graveyard": [
+     "Polluted Delta",
+     "Ponder",
+     "Daze"
+    ],
+    "exile": [],
+    "manaPool": {},
+    "lifeBeforeDoomsday": 16,
+    "landPlayedThisTurn": true,
+    "noncreatureSpellsCastThisTurn": 1,
+    "spellsCastThisTurn": 1,
+    "turnsAhead": 1,
+    "opponent": {
+     "permanents": [
+      {
+       "name": "Wasteland"
+      },
+      {
+       "name": "Delver of Secrets",
+       "power": 3,
+       "toughness": 2
+      },
+      {
+       "name": "Dragon's Rage Channeler",
+       "power": 1
+      }
+     ],
+     "graveyard": [
+      "Ponder",
+      "Mishra's Bauble",
+      "Scalding Tarn"
+     ],
+     "exile": [],
+     "life": 17,
+     "handSize": 3,
+     "lands": {
+      "untapped": 2,
+      "total": 2,
+      "colors": "UR"
+     },
+     "deckEstimate": {
+      "Delver of Secrets": 4,
+      "Dragon's Rage Channeler": 4,
+      "Murktide Regent": 3,
+      "Lightning Bolt": 4,
+      "Force of Will": 4,
+      "Daze": 4,
+      "Brainstorm": 4,
+      "Ponder": 4,
+      "Mishra's Bauble": 4,
+      "Pyroblast": 1,
+      "Spell Pierce": 1,
+      "Stifle": 1,
+      "Consider": 2,
+      "Brazen Borrower": 1,
+      "Unholy Heat": 2,
+      "Volcanic Island": 4,
+      "Scalding Tarn": 4,
+      "Polluted Delta": 2,
+      "Misty Rainforest": 2,
+      "Wasteland": 4,
+      "Island": 1
+     },
+     "deckEstimateSource": "SAMPLE estimate: hand-made typical UR Delver list, not from logged games"
+    }
+   },
+   "actual": {
+    "pile": [
+     "Street Wraith",
+     "Thassa's Oracle",
+     "Underground Sea",
+     "Underground Sea",
+     "Undercity Sewers"
+    ],
+    "pileOrdered": false,
+    "result": "loss",
+    "winBy": "normal",
+    "turnsAfterDoomsday": 1
+   },
+   "warnings": [
+    "Opponent permanent 'Delver of Secrets' not modelled: only its power (3) counts for the clock (flipped: Insectile Aberration)",
+    "Opponent permanent 'Dragon's Rage Channeler' not modelled: only its power (1) counts for the clock"
+   ]
+  }
+ ]
+}

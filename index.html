@@ -6,17 +6,65 @@
   <title>Doomsday Pile Practice</title>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./src/ui.js"></script>
+  <script type="module" src="./src/practice.js"></script>
 </head>
 <body>
   <header>
     <h1>Doomsday Pile Practice</h1>
-    <p class="sub">Pick a pile. See whether a line wins against every shuffle.</p>
+    <p class="sub">Build a pile on a real board. See whether it wins, and what the opponent's hand could do to it.</p>
+    <nav class="tabs" role="tablist" aria-label="Mode">
+      <button type="button" role="tab" id="tab-practice" aria-controls="practice" aria-selected="true">Practice</button>
+      <button type="button" role="tab" id="tab-sandbox" aria-controls="sandbox" aria-selected="false" tabindex="-1">Sandbox</button>
+    </nav>
   </header>
 
   <div id="load-error" class="load-error" role="alert" hidden></div>
   <noscript><p class="load-error">This page needs JavaScript (ES modules).</p></noscript>
 
-  <main>
+  <main id="practice" role="tabpanel" aria-labelledby="tab-practice">
+    <div id="p-banner" class="notice" role="status" hidden></div>
+
+    <section id="p-sec-deal">
+      <h2>Deal a board</h2>
+      <div class="grid3">
+        <label>My deck <select id="p-f-deck"><option value="">Any</option></select></label>
+        <label>Opponent <select id="p-f-opp"><option value="">Any</option></select></label>
+        <label>Player <select id="p-f-player"><option value="">Any</option></select></label>
+      </div>
+      <label class="check"><input type="checkbox" id="p-repeat"><span>Repeat all <span class="meta">(include solved boards)</span></span></label>
+      <p id="p-count" class="meta"></p>
+      <button type="button" id="p-deal" class="primary">Deal</button>
+      <details>
+        <summary>Load scenarios file</summary>
+        <label for="p-file" class="meta">A <code>scenarios.json</code> file (<code>{ "version": 2, "scenarios": [...] }</code>). It replaces the loaded boards until you reload the page.</label>
+        <input type="file" id="p-file" accept=".json,application/json">
+      </details>
+    </section>
+
+    <section id="p-sec-board" hidden>
+      <h2 id="p-title">Board</h2>
+      <div id="p-board"></div>
+    </section>
+
+    <section id="p-sec-pile" hidden>
+      <h2>Your pile <span class="meta">(top → bottom)</span></h2>
+      <ol id="p-pile" class="pile"></ol>
+      <details>
+        <summary>Pile pool <span id="p-pool-total" class="meta"></span></summary>
+        <ul id="p-pool" class="pool"></ul>
+      </details>
+      <button type="button" id="p-submit" class="primary">Submit pile</button>
+      <div id="p-result" class="result" aria-live="polite"></div>
+    </section>
+
+    <section id="p-sec-stats">
+      <h2>Stats <span class="meta">(this browser)</span></h2>
+      <div id="p-stats"></div>
+      <div class="row"><button type="button" id="p-stats-reset" class="secondary">Reset stats</button></div>
+    </section>
+  </main>
+
+  <main id="sandbox" role="tabpanel" aria-labelledby="tab-sandbox" hidden>
     <section id="sec-deck">
       <h2>1. Deck</h2>
       <label for="deck-text">Main deck after sideboarding. A “Sideboard” line ends the main deck.</label>
