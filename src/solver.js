@@ -21,9 +21,16 @@
 // earlier zone without consuming something else), so a DFS with memo of solved
 // states is sound. A defensive on-path check is kept anyway.
 //
+// v2: the adversary's choices are extra AND outcomes of my actions, so the same
+// search applies. The graph stays acyclic: every adversary option consumes a
+// held card or a visible permanent, and the W-oracle loop (resolve_oracle →
+// they act → I get priority) consumes one card per round.
+//
 // Budget exhaustion throws an internal ABORT that unwinds the whole search: an
-// aborted subtree is never cached, so 'aborted' can't turn into 'no_win'.
-import { legalActions, applyLegal, status, oppKey } from './engine.js';
+// aborted subtree is never cached, so 'aborted' can't turn into 'no_win'. The
+// engine's OutcomeLimitError (one action with too many random orderings) is
+// reported the same way: 'aborted', i.e. unknown, never a win or a no_win.
+import { legalActions, applyLegal, status, oppKey, OutcomeLimitError } from './engine.js';
 import { cardDef } from './cards.js';
 
 const ORACLE = "Thassa's Oracle";
@@ -424,6 +431,8 @@ export function solve(state, { maxNodes = 200000 } = {}) {
     }
   } catch (e) {
     if (e === ABORT) return { result: 'aborted', plan: null, nodes };
+    // An action with more random outcomes than the engine enumerates: unknown, never a win.
+    if (e instanceof OutcomeLimitError) return { result: 'aborted', plan: null, nodes, reason: e.message };
     throw e;
   }
 }

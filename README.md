@@ -40,6 +40,38 @@ All paths are relative, so the site works under `https://<user>.github.io/<repo>
 - Some card texts were written from memory rather than checked against a source; `SPEC.md` §7
   marks which ones.
 
+## v2 simplifications (adversary and board hate; SPEC_V2_API.md §13, SPEC_QUESTIONS.md v2)
+
+- Everything aimed at the Oracle trigger (Stifle, Consign to Memory, removal, Endurance) is used when
+  you pass priority with the trigger on the stack (W-oracle), never earlier (V2-Q2).
+- Removal only targets a Thassa's Oracle whose trigger is pending; Lightning Bolt can also hit you (V2-Q3).
+- Kozilek's Command is three packages: exile Oracle (X=2), make you draw (X=0), exile one graveyard
+  card (X=1) (V2-Q4). Surgical Extraction has four zone variants. Flusterstorm's copies are one combined tax.
+- The clock is the sum of the opponent's creature power at the start of each of their turns. No blocks,
+  no Mobilize, exalted, prowess or first strike (V2-Q5, V2-Q6).
+- The opponent's own spells are never taxed by Thalia, Sphere, Trinisphere, Damping Sphere, Silence or
+  Archon (V2-Q7).
+- Wasteland and Ghost Quarter act only at the start of the opponent's turn and of your turn, and you
+  can't tap the land in response (V2-Q8).
+- Alternative costs: any blue land counts as an Island for Daze, any black land as a Swamp for Snuff
+  Out, and a pitch spell (Force of Will, Force of Negation, Solitude, Endurance, Unmask) can pitch an unknown
+  card whenever their hand size is at least 2. Phyrexian mana is paid with life first (V2-Q10).
+- Hullbreacher's Treasures pay like mana of any colour, but not {C} (V2-Q11).
+- Torpor Orb also stops the opponent's ETBs: a Bowmasters flashed in does not ping, and an Endurance
+  only adds a body (V2-Q12).
+- There is no upkeep window for you before your draw step (V2-Q14).
+- Not modelled: Teferi's −3, Narset's −2, Phelia's flicker, Dauthi Voidwalker's sacrifice ability,
+  Cabal Therapy's flashback, Hexing Squelcher's ward, the opponent's creatures pinging their own
+  permanents (V2-Q15).
+- The interaction grade uses `deckEstimate` exactly as given (no padding to 60) (V2-Q16). Only pairs whose
+  two singles both win are solved, and a hand is judged by its singles and pairs alone (monotonicity).
+  Pact of Negation's upkeep only comes if the search reaches the opponent's next turn (V2-Q20).
+- A fetchland commits to the land it searches for when you crack it. If Surgical Extraction exiles that
+  land from your library in response, the fetch finds nothing.
+- Your Duress and Thoughtseize still don't take cards from the opponent's modelled hand.
+- One action may create at most 50,000 random orderings (for example Endurance followed by Surgical
+  Extraction on a big library). Past that, the check reports TOO BIG (unknown), never a win.
+
 ## Data
 
 No game data from the Boris Doomsday MCP is stored in this repo. The only thing

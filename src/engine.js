@@ -201,8 +201,41 @@ function clone(s) {
 }
 
 // --- branches ---------------------------------------------------------------
-const branch = (s) => ({ s, adv: [], advDesc: [], lab: [] });
-const fork = (P) => ({ s: clone(P.s), adv: [...P.adv], advDesc: [...P.advDesc], lab: [...P.lab] });
+// `ctx` is shared by every branch of one applyLegal call: it counts the random
+// orderings generated so far (see OUTCOME_LIMIT).
+const branch = (s) => ({ s, adv: [], advDesc: [], lab: [], ctx: { orderings: 0 } });
+const fork = (P) => ({ s: clone(P.s), adv: [...P.adv], advDesc: [...P.advDesc], lab: [...P.lab], ctx: P.ctx });
+
+/**
+ * One action may not generate more than this many random orderings in total
+ * (summed over its branches). v1 never exceeds 5! = 120 per shuffle, but v2 can:
+ * Endurance can put a whole graveyard under the library and a later Surgical
+ * Extraction shuffles that bigger library, which is millions of orderings in one
+ * call. Past the limit applyAction throws OutcomeLimitError (checked BEFORE the
+ * orderings are built); solve() reports 'aborted' for such a state, which grade()
+ * counts as unknown (never as a win).
+ */
+export const OUTCOME_LIMIT = 50000;
+export class OutcomeLimitError extends Error {
+  constructor(n) {
+    super(`One action would create more than ${OUTCOME_LIMIT} random outcomes (${n}); the board is too big to enumerate.`);
+    this.name = 'OutcomeLimitError';
+  }
+}
+/** Number of distinct orderings of a multiset (multinomial coefficient). */
+function orderingCount(names) {
+  let r = 1;
+  let n = 0;
+  for (const c of countBy(names).values()) {
+    for (let i = 1; i <= c; i++) { n += 1; r = (r * n) / i; }
+  }
+  return Math.round(r);
+}
+function chargeOrderings(P, names) {
+  const n = orderingCount(names);
+  P.ctx.orderings += n;
+  if (P.ctx.orderings > OUTCOME_LIMIT) throw new OutcomeLimitError(P.ctx.orderings);
+}
 /** Apply f to every branch (f returns an array of branches). */
 const each = (Ps, f) => {
   const out = [];
@@ -234,6 +267,7 @@ function toGraveyard(s, name) {
 
 /** Shuffle P's library: one branch per distinct ordering. `prefix` stays on top. */
 function shuffleB(P, prefix = []) {
+  chargeOrderings(P, P.s.library);
   const perms = distinctPermutations(P.s.library);
   return perms.map((perm, i) => {
     const Q = i === perms.length - 1 ? P : fork(P);
@@ -1301,6 +1335,7 @@ function doChoose(P, a) {
       const rest = s.library.slice(pc.x);
       const top = [];
       if (opt !== null) { removeOne(look, opt); top.push(opt); }
+      chargeOrderings(P, look);
       const perms = distinctPermutations(look);
       return perms.map((perm, i) => {
         const Q = i === perms.length - 1 ? P : fork(P);
@@ -1669,6 +1704,7 @@ function applyAdv(P, o, win) {
       const gy = s.graveyard;
       s.graveyard = [];
       const lib = s.library;
+      chargeOrderings(P, gy);
       const perms = distinctPermutations(gy);
       return perms.map((perm, i) => {
         const Q = i === perms.length - 1 ? P : fork(P);

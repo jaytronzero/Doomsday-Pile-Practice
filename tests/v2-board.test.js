@@ -40,6 +40,8 @@ test("A' goldfish baseline is a win", () => expectWin(build(setupA2(), PILE_A2))
 
 // ---------------------------------------------------------------------------
 // "Thorn of Amethyst": "Noncreature spells cost {1} more to cast."
+const tapSwampB = (x) => act(x, (a) => a.type === 'tap' && a.card === SWAMP && a.color === 'B');
+
 describe('Thorn of Amethyst', () => {
   test('taxes Brainstorm, not Oracle', () => {
     const s = st({ hand: [ORACLE, 'Brainstorm'], manaPool: { U: 2 } }, [perm(THORN)]);
@@ -216,11 +218,14 @@ describe('Teferi, Time Raveler', () => {
     assert.equal(s.pendingTrigger, true);
     assert.ok(!hasAction(s, isCast('Brainstorm')), 'trigger on the stack: not sorcery timing');
     assert.ok(hasAction(s, isCycle(WRAITH)));
+    // Lead fix (TEST_DISPUTES D1): casts pay from the pool (SPEC §5.4), so tap the Swamp first.
     const o = st({ hand: ['Dark Ritual', WRAITH], battlefield: [bf(SWAMP)], turnsAhead: 1 }, [perm(TEFERI)]);
-    const opp = passOnce(o);
+    const opp = tapSwampB(passOnce(o));
     assert.equal(opp.phase, 'opp');
     assert.ok(!hasAction(opp, isCast('Dark Ritual')));
     assert.ok(hasAction(opp, isCycle(WRAITH)));
+    const ctl = tapSwampB(passOnce(st({ hand: ['Dark Ritual', WRAITH], battlefield: [bf(SWAMP)], turnsAhead: 1 }, [])));
+    assert.ok(hasAction(ctl, isCast('Dark Ritual')), 'control: without Teferi the instant is castable on their turn');
   });
   // T (hand [Consider], Island untapped + Sea tapped, life 20 → 10, turnsAhead 1, pile [W, O, W, W, W]):
   // T + Deafening Silence → WIN: turn 0 Silence blocks Consider (Doomsday counted). Opponent's turn: count reset;
@@ -242,10 +247,13 @@ describe('Teferi, Time Raveler', () => {
 // "Voice of Victory": "Mobilize 2 (...)\nYour opponents can't cast spells during your turn."
 describe('Voice of Victory', () => {
   test("no spells on the opponent's turn; cycling fine; my own turn unaffected", () => {
-    const s = st({ hand: ['Dark Ritual', WRAITH], battlefield: [bf(SWAMP)], turnsAhead: 1 }, [perm(VOICE)]);
+    // Lead fix (TEST_DISPUTES D1): casts pay from the pool (SPEC §5.4).
+    const s = st({ hand: ['Dark Ritual', WRAITH], battlefield: [bf(SWAMP)], manaPool: { B: 1 }, turnsAhead: 1 }, [perm(VOICE)]);
     assert.ok(hasAction(s, isCast('Dark Ritual')));
-    const opp = passOnce(s);
+    const opp = tapSwampB(passOnce(s));
     assert.ok(!hasAction(opp, isCast('Dark Ritual')));
+    const ctl = tapSwampB(passOnce(st({ hand: ['Dark Ritual', WRAITH], battlefield: [bf(SWAMP)], turnsAhead: 1 }, [])));
+    assert.ok(hasAction(ctl, isCast('Dark Ritual')), 'control: without Voice the instant is castable on their turn');
     assert.ok(hasAction(opp, isCycle(WRAITH)));
     let t = st({ hand: [ORACLE, 'Brainstorm'], manaPool: { U: 3 } }, [perm(VOICE)]);
     t = act(t, isCastPaid(ORACLE, { U: 2 }));
