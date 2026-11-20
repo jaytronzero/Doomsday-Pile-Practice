@@ -99,8 +99,11 @@ describe('buildStartState validation (§3)', () => {
     assert.doesNotThrow(() => buildStartState(setupA({ turnsAhead: 3 }), [...PILE_A]));
   });
 
-  test('throws when an opponent permanent has a name not in §6', () => {
-    throwsBuild(setupA({ opponent: { permanents: [{ name: 'Blood Moon' }] } }), [...PILE_A]);
+  // Superseded by SPEC_V2 §2 (lead ruling on V2-Q1): unknown opponent permanents are kept
+  // with no effect and reported in state.warnings instead of throwing.
+  test('an unmodelled opponent permanent warns instead of throwing (SPEC_V2 §2)', () => {
+    const s = buildStartState(setupA({ opponent: { permanents: [{ name: 'Totally Unknown Card' }] } }), [...PILE_A]);
+    assert.ok(Array.isArray(s.warnings) && s.warnings.some((w) => w.includes('Totally Unknown Card')));
   });
 
   test('throws when Chalice of the Void lacks an integer x ≥ 0', () => {
